@@ -1,0 +1,56 @@
+/* src/components/CourseCard.css */
+.course-card {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 260px;
+}
+
+.course-card h3 {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.course-short {
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+.course-meta {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.course-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+}
+
+.course-tags span {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.course-btn {
+  margin-top: 0.75rem;
+  align-self: flex-start;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  border: none;
+  background: #111827;
+  color: white;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
