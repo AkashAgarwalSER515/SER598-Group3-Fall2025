@@ -1,0 +1,8 @@
+{
+  "name": "weather-cdn-demo",
+  "main": "worker.js",
+  "compatibility_date": "2024-05-05",
+  "vars": {
+    "BACKEND_BASE": "http://192.168.49.2:30080"
+  }
+}
