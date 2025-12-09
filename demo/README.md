@@ -37,7 +37,7 @@ This project is designed to look and behave like a real cloud-native weather app
 
 ---
 
-# 🚀 **1. Prerequisites**
+#  **1. Prerequisites**
 
 Make sure you have installed:
 
@@ -63,7 +63,7 @@ Backend & frontend build inside Docker, so Node is optional.
 
 ---
 
-# 🚀 **2. Start Minikube**
+#  **2. Start Minikube**
 
 Start cluster using Docker driver:
 
@@ -80,7 +80,7 @@ minikube addons enable metrics-server
 
 ---
 
-# 🚀 **3. Build Backend & Frontend Images (Inside Minikube)**
+#  **3. Build Backend & Frontend Images (Inside Minikube)**
 
 Your images MUST be built inside Minikube's docker daemon.
 
@@ -104,7 +104,7 @@ docker build -t demo-frontend:latest ./frontend
 
 ---
 
-# 🚀 **4. Deploy Everything to Kubernetes**
+#  **4. Deploy Everything to Kubernetes**
 
 Apply all manifests:
 
@@ -126,7 +126,7 @@ kubectl get pods -n k8s-demo
 
 ---
 
-# 🚀 **5. Run Minikube Tunnel (Required for Ingress)**
+#  **5. Run Minikube Tunnel (Required for Ingress)**
 
 In a **second terminal**, run:
 
@@ -146,7 +146,7 @@ point to your cluster's ingress controller.
 
 ---
 
-# 🚀 **6. Add demo.local to /etc/hosts**
+#  **6. Add demo.local to /etc/hosts**
 
 Edit hosts file:
 
@@ -164,7 +164,7 @@ Save and exit.
 
 ---
 
-# 🌐 **7. Access Your Application**
+# **7. Access Your Application**
 
 Open browser:
 
@@ -176,7 +176,7 @@ You should see your modern Weather Analytics UI.
 
 ---
 
-# ⚡ **8. Testing Backend Caching**
+# **8. Testing Backend Caching**
 
 Hit the API:
 
@@ -199,7 +199,7 @@ Second response → instant, and includes:
 
 ---
 
-# 📈 **9. Testing Autoscaling (HPA)**
+# **9. Testing Autoscaling (HPA)**
 
 Generate load to force scaling:
 
@@ -224,7 +224,7 @@ kubectl get pods -n k8s-demo
 
 ---
 
-# 🔄 **10. Rebuilding After Code Changes**
+# **10. Rebuilding After Code Changes**
 
 ### Backend:
 
@@ -244,41 +244,9 @@ kubectl rollout restart deployment react-frontend -n k8s-demo
 
 ---
 
-# 🧹 **11. Cleanup**
+# **11. Cleanup**
 
 ```bash
 kubectl delete namespace k8s-demo
 minikube stop
 ```
-
----
-
-# 🧠 **Architecture Overview**
-
-```
-Browser (React UI)
-        │
-        ▼
-Ingress (demo.local)
-        │
-        ├── /api/* → Node.js Backend (K8s Deployment)
-        │           ├─ caching layer (HIT/MISS)
-        │           ├─ CPU-heavy weather analysis
-        │           └─ autoscaling under load
-        │
-        └── / → React Frontend (K8s Deployment)
-```
-
----
-
-# 🏁 **Project Complete**
-
-You now have:
-
-✔ Professional Weather UI
-✔ Backend caching
-✔ Kubernetes deployment
-✔ Ingress routing
-✔ Autoscaling
-✔ Real-time weather analysis
-✔ K8s-based performance demonstration
