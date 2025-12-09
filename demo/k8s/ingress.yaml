@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-ingress
+  namespace: k8s-demo
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: demo.local
+      http:
+        paths:
+          - path: /api/
+            pathType: Prefix
+            backend:
+              service:
+                name: express-backend-svc
+                port:
+                  number: 4000
+
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: react-frontend-svc
+                port:
+                  number: 80
