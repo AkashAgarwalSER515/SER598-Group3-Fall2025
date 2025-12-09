@@ -1,20 +1,5 @@
 import React from "react";
 
-/**
- * Group3 — Performant & Scalable Deployment Tutorial
- * ---------------------------------------------------
- * Complete React single-page tutorial website using TailwindCSS.
- * Includes:
- *  - 3000+ words of tutorial content
- *  - Sidebar TOC
- *  - Clean documentation layout
- *  - Conceptual explanations + step-by-step activities
- *  - Recommended project structure (ours, not mandatory)
- *  - Build/run/deploy commands for our demo
- *
- * This is the final tutorial website to be packaged in /tutorial for SER598.
- */
-
 const sections = [
   {
     id: "intro",
@@ -23,8 +8,8 @@ const sections = [
 <p class="leading-relaxed">
 Modern web applications often support users across regions, networks, and device types. They must be 
 fast, reliable, scalable, and resilient to workload fluctuations. Traditional monolithic deployments 
-struggle to meet these expectations. Cloud-native patterns — such as containerization, microservices, 
-Kubernetes orchestration, CDN acceleration, and edge compute — enable systems to achieve global 
+struggle to meet these expectations. Cloud-native patterns - such as containerization, microservices, 
+Kubernetes orchestration, CDN acceleration, and edge compute - enable systems to achieve global 
 performance and elastic scaling.
 </p>
 
@@ -75,52 +60,344 @@ performance improvements in a clean, reproducible way.
   },
 
   {
-    id: "background",
-    title: "3. Background & History",
+    id: "core-concepts",
+    title: "3. Core Concepts",
     content: `
-<h3 class="font-semibold mt-4">3.1 Containerization</h3>
 <p class="leading-relaxed">
-Before Docker’s introduction in 2013, industries relied heavily on virtual machines — slow to boot, 
-resource-intensive, and environment-dependent. Docker popularized image-based packaging and standardized 
-execution through the Open Container Initiative (OCI). Containers allow applications to run consistently 
-everywhere: on local machines, on CI servers, inside Kubernetes, or in the cloud.
+Before exploring scalable deployment techniques such as Kubernetes, CDNs, edge computing, and autoscaling,
+it is essential to understand several foundational concepts that form the backbone of modern cloud-native systems.
+These concepts-indirection, virtualization, containerization, orchestration, and content distribution-help us
+see why today's architectures work the way they do.
 </p>
 
-<h3 class="font-semibold mt-4">3.2 Kubernetes</h3>
+<hr class="my-6"/>
+
+<h3 class="font-semibold text-lg">Layer of Indirection</h3>
+
 <p class="leading-relaxed">
-Derived from Google's internal Borg and Omega schedulers, Kubernetes was open-sourced in 2014 as a 
-general-purpose, declarative orchestration system for containers. It quickly became the industry standard. 
-Kubernetes abstracts:
+A <strong>layer of indirection</strong> is introduced between two existing system components when a problem 
+cannot be solved through direct interaction. Instead of A communicating directly with B, an interaction 
+layer is inserted between them, allowing additional functionality without modifying the original components.
+</p>
+
+<p class="leading-relaxed mt-2">
+Examples in modern systems:
 </p>
 
 <ul class="list-disc ml-6 leading-relaxed">
-  <li><strong>Pods</strong> — the smallest deployable unit.</li>
-  <li><strong>Deployments</strong> — declarative desired state with rolling updates.</li>
-  <li><strong>ReplicaSets</strong> — ensures correct number of pod replicas.</li>
-  <li><strong>Services</strong> — reliable internal networking.</li>
-  <li><strong>Ingress</strong> — routing traffic from outside the cluster.</li>
-  <li><strong>Autoscaling</strong> — HPA, VPA, Cluster Autoscaler.</li>
+  <li>Hypervisors → Indirection between hardware and OS.</li>
+  <li>Container runtimes → Indirection between OS and applications.</li>
+  <li>Kubernetes control plane → Indirection between developers and running workloads.</li>
+  <li>CDNs → Indirection between clients and origin servers.</li>
 </ul>
 
-<h3 class="font-semibold mt-4">3.3 CDNs & Edge Compute</h3>
-<p class="leading-relaxed">
-Since 1998 (Akamai), CDNs have evolved from static file caching to full programmable platforms with 
-edge compute (Cloudflare Workers, Fastly Compute). With 200+ POPs globally, CDNs now act as the “first hop,” 
-reducing round-trip time to under 20ms in many cases.
+<p class="leading-relaxed mt-2">
+Indirection increases flexibility, scalability, security, and performance while minimizing changes
+to existing components.
 </p>
 
-<h3 class="font-semibold mt-4">3.4 Autoscaling</h3>
+<hr class="my-6"/>
+
+<h3 class="font-semibold text-lg">🖥️ Virtual Machines (VMs)</h3>
+
+<img 
+  src="https://media.geeksforgeeks.org/wp-content/uploads/20250823130235313168/virtual_machines.webp"
+  alt="Virtual Machine Diagram"
+  class="rounded-md shadow mb-4"
+/>
+
 <p class="leading-relaxed">
-Manual scaling is insufficient for modern traffic patterns. Kubernetes HPA introduced dynamic scaling 
-based on CPU, memory, or custom metrics via Prometheus. Autoscaling is essential for cost-efficiency and 
-resilience during spikes.
+Virtual Machines (VMs) allow multiple “virtual computers” to run on a single physical system.  
+Each VM behaves as a fully independent computer with its own:
 </p>
-`,
+
+<ul class="list-disc ml-6 leading-relaxed">
+  <li>Virtual CPU</li>
+  <li>Virtual memory</li>
+  <li>Virtual storage</li>
+  <li>Guest operating system</li>
+</ul>
+
+<p class="leading-relaxed mt-2">
+By using a <strong>hypervisor</strong>-the layer of indirection above the host OS-multiple VMs can share underlying
+hardware resources. Hypervisors ensure isolation so that one VM cannot directly interfere with another.
+</p>
+
+<p class="leading-relaxed mt-2">
+Examples of VM platforms:
+</p>
+<ul class="list-disc ml-6 leading-relaxed">
+  <li>VirtualBox</li>
+  <li>VMware</li>
+  <li>Hyper-V</li>
+  <li>AWS EC2 virtual machines</li>
+</ul>
+
+<p class="leading-relaxed mt-2">
+<strong>Benefits:</strong> Strong isolation, multiple OS environments, secure multi-tenancy.<br/>
+<strong>Drawback:</strong> Resource-heavy. Each VM loads a full guest operating system, resulting in slow startup times and higher RAM/CPU usage.
+</p>
+
+<hr class="my-6"/>
+
+<h3 class="font-semibold text-lg">📦 Containers</h3>
+
+<img 
+  src="https://www.docker.com/app/uploads/2021/11/container-what-is-container.png"
+  alt="Container Diagram"
+  class="rounded-md shadow mb-4"
+/>
+
+<p class="leading-relaxed">
+Containers offer a lightweight alternative to virtual machines. A container packages:
+</p>
+
+<ul class="list-disc ml-6 leading-relaxed">
+  <li>Application code</li>
+  <li>Runtime</li>
+  <li>Libraries and dependencies</li>
+</ul>
+
+<p class="leading-relaxed mt-2">
+Unlike VMs, <strong>containers do not include a full guest OS</strong>. Instead, they share the host operating system's 
+kernel using a container runtime (e.g., Docker, containerd). This leads to:
+</p>
+
+<ul class="list-disc ml-6 leading-relaxed">
+  <li>Faster startup times (milliseconds)</li>
+  <li>Lower resource usage</li>
+  <li>High density-run many containers on one machine</li>
+  <li>Easy portability across environments</li>
+</ul>
+
+<p class="leading-relaxed mt-2">
+Downside: Containers do not provide as strong isolation as VMs since they share the host kernel.
+However, for most cloud workloads, the tradeoff is acceptable and desirable for performance reasons.
+</p>
+
+<hr class="my-6"/>
+
+<h3 class="font-semibold text-lg">🎼 Orchestration</h3>
+
+<img 
+  src="https://orkes.io/images/blogs/2024-08-23-what-is-orchestration/What-Is-Orchestration-Ochestration-Layer.jpg"
+  alt="Orchestration Layer Diagram"
+  class="rounded-md shadow mb-4"
+/>
+
+<p class="leading-relaxed">
+Orchestration is the coordination of distributed components into automated, repeatable, reliable processes.  
+An <strong>orchestrator</strong> acts as the central intelligence layer that ensures multiple services work together 
+toward an end goal.
+</p>
+
+<p class="leading-relaxed mt-2">
+Orchestration platforms manage:
+</p>
+
+<ul class="list-disc ml-6 leading-relaxed">
+  <li>Microservice workflows</li>
+  <li>Autoscaling and placement of workloads</li>
+  <li>Health checks and restarts</li>
+  <li>Rolling deployments and rollbacks</li>
+  <li>Interactions between APIs, databases, event systems, LLM models, and external services</li>
+</ul>
+
+<p class="leading-relaxed mt-2">
+Kubernetes is the most widely used orchestrator for containerized workloads.  
+Other orchestration systems include:
+</p>
+
+<ul class="list-disc ml-6 leading-relaxed">
+  <li>Apache Airflow - data pipeline orchestration</li>
+  <li>Temporal / Netflix Conductor - workflow orchestration</li>
+  <li>AWS Step Functions - serverless orchestration</li>
+</ul>
+
+<p class="leading-relaxed mt-2">
+Modern distributed systems are too large and complex to manage manually, making orchestration foundational 
+to scalable cloud deployments.
+</p>
+
+<hr class="my-6"/>
+
+<h3 class="font-semibold text-lg">🌍 Content Delivery Networks (CDNs)</h3>
+
+<img 
+  src="https://zd-brightspot.s3.us-east-1.amazonaws.com/wp-content/uploads/2021/08/25131051/Content-Delivery-Network.png"
+  alt="CDN Diagram"
+  class="rounded-md shadow mb-4"
+/>
+
+<p class="leading-relaxed">
+A <strong>Content Delivery Network (CDN)</strong> is a globally distributed network of servers designed to minimize latency 
+by serving content from the geographically closest location to the user. CDNs significantly improve load times, 
+reduce bandwidth consumption, and decrease the load on origin servers.
+</p>
+
+<p class="leading-relaxed mt-2">
+CDNs are typically used to deliver:
+</p>
+
+<ul class="list-disc ml-6 leading-relaxed">
+  <li>Images and videos</li>
+  <li>JavaScript and CSS</li>
+  <li>HTML documents</li>
+  <li>APIs (with caching)</li>
+  <li>Static website assets</li>
+</ul>
+
+<h3 class="font-semibold mt-4">📡 CDN Architecture</h3>
+
+<p class="leading-relaxed">
+Modern CDN architecture commonly includes three layers:
+</p>
+
+<ul class="list-disc ml-6 leading-relaxed">
+  <li>
+    <strong>Origin Server</strong> - The ultimate source of truth (e.g., application server, storage bucket).
+  </li>
+
+  <li>
+    <strong>Regional Edge Caches (RECs)</strong> - Mid-tier caches in strategic regions that reduce load on the origin
+    by serving multiple edge locations. They improve cache hit ratios across continents.
+  </li>
+
+  <li>
+    <strong>Edge Locations (Points of Presence)</strong> - Globally distributed servers (50–300+ per provider) that deliver 
+    content directly to users with minimal latency.
+  </li>
+</ul>
+
+<p class="leading-relaxed mt-2">
+A CDN request flow typically works as follows:
+</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-md text-sm whitespace-pre overflow-auto">
+User → Nearest Edge Location → (Optional: REC) → Origin Server
+</pre>
+
+<p class="leading-relaxed mt-2">
+If the content is cached at the edge → <strong>HIT</strong> → returned immediately.  
+If not → <strong>MISS</strong> → pulled from the origin → cached locally → returned to the user.
+</p>
+
+<p class="leading-relaxed mt-4 font-semibold">
+Together, these foundational concepts set the stage for Kubernetes, cloud scaling, CDNs, and edge compute - 
+all of which are essential components of performant, scalable deployments in modern cloud architectures.
+</p>
+`
   },
+
+
+  {
+    id: "background",
+    title: "4. History",
+    content: `
+<p class="leading-relaxed">
+Scalable and performant deployment architectures emerged gradually over several decades, driven by 
+advances in operating systems, distributed systems, virtualization, networking, and cloud computing. 
+Below is a historically accurate timeline capturing the key milestones that shaped today's 
+cloud-native, containerized, and edge-accelerated world.
+</p>
+
+<h3 class="font-semibold mt-4">📜 Timeline of Key Milestones</h3>
+
+<ul class="list-disc ml-6 leading-relaxed">
+
+  <li>
+    <strong>1979 - Unix V7 Introduces chroot</strong><br/>
+    The first form of process isolation. Applications could be restricted to a specific filesystem view.  
+    This primitive concept eventually influenced container isolation.
+  </li>
+
+  <li>
+    <strong>1998 - Akamai Introduces the CDN</strong><br/>
+    Akamai pioneered Content Delivery Networks, caching static assets geographically close to users, 
+    reducing latency and offloading origin servers.
+  </li>
+
+  <li>
+    <strong>2003–2004 - Google Creates Borg</strong><br/>
+    Borg was Google’s internal cluster manager used to run thousands of services and batch jobs across 
+    large datacenters. Borg introduced concepts like declarative configuration and self-healing that 
+    later shaped Kubernetes.
+  </li>
+
+  <li>
+    <strong>2006 - AWS Launches EC2</strong><br/>
+    Amazon made on-demand compute accessible at scale.  
+    This shifted the industry away from purchasing physical servers to renting compute capacity.
+  </li>
+
+  <li>
+    <strong>2000–2008 - OS-Level Virtualization Advances</strong><br/>
+    • FreeBSD Jails (2000) offered isolated userspace partitions.<br/>
+    • Linux Containers (LXC, 2008) introduced kernel-level isolation using namespaces and cgroups.<br/>
+    These innovations paved the way for modern containers.
+  </li>
+
+  <li>
+    <strong>2011 - NIST Defines Cloud Computing (SP 800-145)</strong><br/>
+    The National Institute of Standards and Technology formalized widely-adopted cloud principles such as:<br/>
+    On-demand self-service, Broad network access, Resource pooling, Rapid elasticity, and Measured service.
+  </li>
+
+  <li>
+    <strong>2013 - Docker Popularizes Containers</strong><br/>
+    Docker introduced easy-to-use tooling and a standard image format.  
+    Containers became portable, reproducible, and developer-friendly, revolutionizing DevOps.
+  </li>
+
+  <li>
+    <strong>2014 - Kubernetes is Open-Sourced</strong><br/>
+    Google released Kubernetes to the public, based on lessons from Borg.  
+    Kubernetes automated deployment, scaling, and management of containers, becoming the global standard.
+  </li>
+
+  <li>
+    <strong>2015 - OCI (Open Container Initiative) is Formed</strong><br/>
+    The Linux Foundation established OCI to prevent fragmentation in container technology.<br/>
+    They defined:<br/>
+    • OCI Image Specification<br/>
+    • OCI Runtime Specification
+    These standards guarantee portability across container runtimes.
+  </li>
+
+  <li>
+    <strong>2015 - CNCF (Cloud Native Computing Foundation) is Created</strong><br/>
+    CNCF governs Kubernetes and ensures its vendor-neutral ecosystem.  
+    Certified Kubernetes Conformance guarantees Kubernetes behaves the same across AWS, Azure, and GCP.
+  </li>
+
+  <li>
+    <strong>2015 - HTTP/2 (RFC 7540) Published</strong><br/>
+    Introduced multiplexing: multiple requests over a single TCP connection.<br/>
+    Reduced latency significantly for web applications.
+  </li>
+
+  <li>
+    <strong>2022 - HTTP/3 (RFC 9114) Published</strong><br/>
+    Built on QUIC (UDP-based), enabling resilient and faster performance even on unreliable networks.  
+    HTTP/3 removes head-of-line blocking, further improving global web performance.
+  </li>
+
+</ul>
+
+<h3 class="font-semibold mt-6">Summary</h3>
+<p class="leading-relaxed">
+From OS-level isolation in the 1970s to edge compute and QUIC-based protocols today, the evolution of 
+scalable and performant deployment technologies has been steadily shaped by the needs of global 
+applications. Containers, Kubernetes, CDNs, edge compute, and autoscaling are the culmination of decades 
+of work - and they continue to evolve rapidly as demand grows.
+</p>
+`
+  },
+
 
   {
     id: "architecture",
-    title: "4. System Architecture Overview",
+    title: "5. System Architecture Overview",
     content: `
 <p class="leading-relaxed">
 This tutorial’s architecture is intentionally general so learners can apply it to any application: 
@@ -140,11 +417,11 @@ Later sections walk through how to reproduce this architecture using your own ba
 
   {
     id: "structure",
-    title: "5. Our Project Structure (Recommended Example)",
+    title: "6. Our Project Structure (Recommended Example)",
     content: `
 <p class="leading-relaxed">
 Below is <strong>the structure our team used</strong> for the project demo.  
-This is not required for your own implementation — it simply illustrates how we organized 
+This is not required for your own implementation - it simply illustrates how we organized 
 our backend, frontend, Kubernetes manifests, and tutorial website.
 </p>
 
@@ -186,7 +463,7 @@ A clean structure is vital for grading, clarity, and reproducibility.
 
   {
     id: "commands",
-    title: "6. Build, Run & Deployment Commands (Our Demo Workflow)",
+    title: "7. Build, Run & Deployment Commands (Our Demo Workflow)",
     content: `
 <p class="leading-relaxed">
 The commands below describe the workflow our team used to prepare, build, deploy, and test the tutorial demo.
@@ -262,7 +539,7 @@ wrangler deploy
 
   {
     id: "frontend",
-    title: "7. Building Your Frontend",
+    title: "8. Building Your Frontend",
     content: `
 <p class="leading-relaxed">
 Your frontend should demonstrate how your application uses the backend and allow students to verify 
@@ -300,7 +577,7 @@ function ExampleCall() {
 
   {
     id: "backend",
-    title: "8. Building Your Backend",
+    title: "9. Building Your Backend",
     content: `
 <p class="leading-relaxed">
 Your backend must expose at least one slow endpoint to demonstrate caching performance improvements
@@ -330,7 +607,7 @@ Do not copy this code directly; implement your own original logic in your projec
 
   {
     id: "containerization",
-    title: "9. Containerization",
+    title: "10. Containerization",
     content: `
 <p class="leading-relaxed">
 Both backend and frontend must be containerized using Docker. Use multi-stage builds where applicable.
@@ -369,7 +646,7 @@ These Dockerfiles serve as guidance. You must implement your own Dockerfiles in 
 
   {
     id: "k8s-local",
-    title: "10. Deploying to Kubernetes (Local)",
+    title: "11. Deploying to Kubernetes (Local)",
     content: `
 <p class="leading-relaxed">
 Local Kubernetes deployment allows rapid validation of your manifests before deploying to the cloud.
@@ -404,7 +681,7 @@ spec:
 
   {
     id: "ingress",
-    title: "11. Ingress Routing",
+    title: "12. Ingress Routing",
     content: `
 <p class="leading-relaxed">
 Ingress maps requests from external clients to the correct Kubernetes services.
@@ -447,7 +724,7 @@ spec:
 
   {
     id: "hpa",
-    title: "12. Autoscaling (HPA)",
+    title: "13. Autoscaling (HPA)",
     content: `
 <p class="leading-relaxed">
 HPA introduces elastic scaling into your system. CPU or memory spikes automatically increase pod replicas.
@@ -482,7 +759,7 @@ kubectl run loadgen -n scalable-demo --image=busybox --restart=Never -- \\
 
   {
     id: "cloudflare",
-    title: "13. Edge Caching with Cloudflare Workers",
+    title: "14. Edge Caching with Cloudflare Workers",
     content: `
 <p class="leading-relaxed">
 Edge caching dramatically improves performance by serving repeated responses directly from Cloudflare's 
@@ -507,138 +784,429 @@ You must write your own Worker implementation in your demo repo.
 
   {
     id: "analysis",
-    title: "14. Analytical Component",
+    title: "15. Analytical Component",
     content: `
 <p class="leading-relaxed">
-SER598 requires an analytical opinion supported by evidence. Below is our synthesized argument.
+Today's modern internet would not exist in its current form without Content Delivery Networks (CDNs). 
+Over the last decade, CDNs have transformed from an optional optimization layer into mission-critical 
+infrastructure that powers nearly everything users interact with - social media feeds, streaming platforms, 
+e-commerce storefronts, gaming networks, and global SaaS products. 
 </p>
 
-<h3 class="font-semibold mt-4">Pros</h3>
-<ul class="list-disc ml-6 leading-relaxed">
-  <li>Edge caching reduces latency by up to 60x in slow-endpoint scenarios.</li>
-  <li>Kubernetes autoscaling ensures resilience under unpredictable load.</li>
-  <li>Containerization improves portability and reproducibility.</li>
-  <li>Ingress consolidates front/back routing under a single hostname.</li>
-</ul>
+<p class="leading-relaxed mt-4">
+However, this dependency introduces powerful advantages <em>and</em> systemic risks. 
+Below is our team’s evidence-based analysis of why CDNs are essential, why they can be dangerous, 
+and what the future holds as CDNs evolve into full edge-compute platforms.
+</p>
 
-<h3 class="font-semibold mt-4">Cons</h3>
-<ul class="list-disc ml-6 leading-relaxed">
-  <li>Complex operational overhead (networking, security, IAM).</li>
-  <li>Higher cloud costs, especially for ALB, EKS control plane, and CDN usage.</li>
-  <li>Debugging distributed traffic requires strong observability.</li>
-</ul>
+<hr class="my-6"/>
 
-<h3 class="font-semibold mt-4">Conclusion</h3>
+<h3 class="font-semibold text-lg">🌍 The Good: CDNs Enable the Global Internet</h3>
+
 <p class="leading-relaxed">
-For medium-to-large applications, Kubernetes + CDN + edge compute is a strong, future-proof architecture. 
-For small apps, serverless or managed hosting may be more cost-effective.
+Modern users expect websites to load instantly - ideally under 2 seconds. Without CDNs, this expectation 
+would be impossible to meet. Google’s research indicates that <strong>53% of mobile users abandon a site 
+that takes longer than 3 seconds to load</strong>. Traditional origin servers simply cannot deliver this level 
+of performance to users worldwide.
 </p>
-`,
+
+<p class="leading-relaxed mt-4">
+A user in Tokyo accessing a server in Virginia experiences ~200ms round-trip latency. With a CDN, that 
+same user receives content from an edge server <strong>located in Tokyo at 20–50ms latency</strong>. 
+This 4×–10× improvement is not a luxury - it is a business necessity.
+</p>
+
+<p class="leading-relaxed mt-4">
+Amazon famously observed that <strong>every 100ms of latency costs 1% of sales revenue</strong>.  
+At global scale, milliseconds have million-dollar consequences.
+</p>
+
+<p class="leading-relaxed mt-4">
+Streaming platforms rely even more heavily on CDNs. For example, 
+<strong>Netflix delivers more than 250 million hours of content per day</strong>, enabled by their Open Connect 
+CDN, which distributes servers directly inside ISP networks. Without CDNs, global 4K and HDR video 
+streaming simply would not be possible - internet backbones would collapse under the load.
+</p>
+
+<hr class="my-6"/>
+
+<h3 class="font-semibold text-lg">⚠️ The Bad: CDNs Create Single Points of Failure</h3>
+
+<p class="leading-relaxed">
+While CDNs speed up the internet, they also introduce systemic risk because a small number of providers 
+carry a disproportionate share of global traffic. When they fail, the internet fails.
+</p>
+
+<p class="leading-relaxed mt-4">
+This risk materialized dramatically on <strong>June 8, 2021</strong>, when 
+<strong>Fastly - one of the world’s largest CDN providers - experienced a configuration bug</strong> that 
+took down its entire global network for 49 minutes.
+</p>
+
+<p class="leading-relaxed">
+During this outage:
+</p>
+
+<ul class="list-disc ml-6 leading-relaxed">
+  <li>Amazon</li>
+  <li>Reddit</li>
+  <li>GitHub</li>
+  <li>Spotify</li>
+  <li>CNN & major news outlets</li>
+  <li>Government portals</li>
+  <li>Hundreds of enterprise SaaS platforms</li>
+</ul>
+
+<p class="leading-relaxed mt-4">
+All went offline simultaneously.
+</p>
+
+<p class="leading-relaxed mt-4">
+This outage, lasting less than an hour, caused an estimated <strong>$100 million in losses</strong> and provided 
+a sobering realization:  
+</p>
+
+<p class="leading-relaxed font-semibold text-red-700 mt-2">
+“The modern internet depends on only a handful of CDN providers - and if one breaks, huge portions of 
+the internet break with it.”
+</p>
+
+<p class="leading-relaxed mt-4">
+This is a classic case of <strong>centralized infrastructure risk</strong>: efficiency improves, but fragility increases.
+</p>
+
+<hr class="my-6"/>
+
+<h3 class="font-semibold text-lg">🔮 Future Outlook: Smarter Edges, Deeper Dependencies</h3>
+
+<p class="leading-relaxed">
+CDNs are evolving beyond caching. They now provide:
+</p>
+
+<ul class="list-disc ml-6 leading-relaxed">
+  <li>Edge compute (Cloudflare Workers, Fastly Compute@Edge)</li>
+  <li>Dynamic request shaping and routing</li>
+  <li>Security filtering and bot mitigation</li>
+  <li>Real-time personalization and A/B testing</li>
+</ul>
+
+<p class="leading-relaxed mt-4">
+As applications increasingly require <strong>low-latency, real-time interactions</strong> - 
+IoT, 5G, multiplayer gaming, augmented reality - CDN edge compute will become an even more fundamental 
+part of system architecture.
+</p>
+
+<p class="leading-relaxed mt-4">
+Cisco forecasts that <strong>82% of all internet traffic will be video by 2025</strong>, 
+meaning reliance on CDN infrastructure will grow dramatically. But with this growth comes increased 
+concentration of power and increased vulnerability to catastrophic outages.
+</p>
+
+<p class="leading-relaxed mt-4">
+The emerging mitigation strategy is <strong>multi-CDN architectures</strong>, where companies distribute traffic 
+across multiple providers. However, these architectures introduce:
+</p>
+
+<ul class="list-disc ml-6 leading-relaxed">
+  <li>Higher cost</li>
+  <li>More complex routing logic</li>
+  <li>More operational overhead</li>
+</ul>
+
+<p class="leading-relaxed mt-4">
+Whether this tradeoff is sustainable remains an open question.
+</p>
+
+<hr class="my-6"/>
+
+<h3 class="font-semibold text-lg">📝 Our Verdict</h3>
+
+<p class="leading-relaxed">
+CDNs are no longer optional - they are <strong>irreplaceable infrastructure</strong> enabling the speed, scale, 
+and reliability the modern internet demands. They provide huge performance improvements, global reach, 
+cost savings, and support for massive workloads. Without CDNs, global-scale applications like Netflix, 
+Amazon, YouTube, Cloudflare-protected APIs, or global SaaS platforms could not exist.
+</p>
+
+<p class="leading-relaxed mt-4">
+But this power comes with risk.
+</p>
+
+<p class="leading-relaxed mt-4 font-semibold">
+Our analysis shows that CDNs create a structural dependency - and when even one major provider fails, 
+large portions of the internet go dark.
+</p>
+
+<p class="leading-relaxed mt-4">
+As CDNs evolve into distributed edge computing platforms, the internet becomes:
+</p>
+
+<ul class="list-disc ml-6 leading-relaxed">
+  <li>Faster</li>
+  <li>More efficient</li>
+  <li>More capable</li>
+  <li>But also more fragile</li>
+</ul>
+
+<p class="leading-relaxed mt-4">
+To ensure a resilient internet, organizations must strengthen redundancy strategies, adopt multi-provider 
+architectures when feasible, and build failure-tolerant systems.
+</p>
+
+<p class="leading-relaxed mt-6 font-semibold">
+CDNs are essential - but the industry must mitigate the risks that come with such concentrated dependency.
+</p>
+`
   },
 
   {
     id: "exercises",
-    title: "15. Hands-On Exercises",
+    title: "16. Hands-On Exercises",
     content: `
-<h3 class="font-semibold mt-4">Exercise 1 — Implement Backend + Frontend</h3>
+<h3 class="font-semibold mt-4">Exercise 1 - Implement Backend + Frontend</h3>
 <p>Create your own backend + frontend and containerize both.</p>
 
-<h3 class="font-semibold mt-4">Exercise 2 — Deploy to Minikube</h3>
+<h3 class="font-semibold mt-4">Exercise 2 - Deploy to Minikube</h3>
 <p>Deploy your images, manifests, and ingress locally.</p>
 
-<h3 class="font-semibold mt-4">Exercise 3 — Autoscaling</h3>
+<h3 class="font-semibold mt-4">Exercise 3 - Autoscaling</h3>
 <p>Load test your backend and measure scale up/down behavior.</p>
 
-<h3 class="font-semibold mt-4">Exercise 4 — Caching</h3>
+<h3 class="font-semibold mt-4">Exercise 4 - Caching</h3>
 <p>Measure Cloudflare Worker HIT/MISS performance improvements.</p>
 
-<h3 class="font-semibold mt-4">Exercise 5 — Analysis</h3>
+<h3 class="font-semibold mt-4">Exercise 5 - Analysis</h3>
 <p>Complete cost, performance, and security analysis.</p>
 `,
   },
 
   {
     id: "references",
-    title: "16. References & Resources",
+    title: "17. References & Resources",
     content: `
-<ul class="list-disc ml-6 leading-relaxed">
+<p class="leading-relaxed mb-4">
+The following references support the historical, technical, and analytical content presented in this tutorial.
+All academic citations follow APA-style formatting where applicable.
+</p>
+
+<ol class="list-decimal ml-6 leading-relaxed space-y-2">
 
   <li>
-    <a href="https://kubernetes.io/docs" target="_blank" class="text-indigo-600 hover:underline">
-      Kubernetes Official Documentation
+    Zhao, M. (2025). <em>Cloud Computing: A Bottom-up Approach</em>. Ming Zhao.
+  </li>
+
+  <li>
+    GeeksforGeeks. “Virtual Machines in Operating Systems.”  
+    <a href="https://www.geeksforgeeks.org/operating-systems/virtual-machines-in-operating-system/" 
+       target="_blank" class="text-indigo-600 hover:underline">
+       https://www.geeksforgeeks.org/operating-systems/virtual-machines-in-operating-system/
     </a>
   </li>
 
   <li>
-    <a href="https://developers.cloudflare.com/workers" target="_blank" class="text-indigo-600 hover:underline">
-      Cloudflare Workers Documentation
+    Docker Inc. “What Is a Container?”  
+    <a href="https://www.docker.com/resources/what-container/" 
+       target="_blank" class="text-indigo-600 hover:underline">
+       https://www.docker.com/resources/what-container/
     </a>
   </li>
 
   <li>
-    <a href="https://docs.aws.amazon.com/eks" target="_blank" class="text-indigo-600 hover:underline">
-      AWS EKS Documentation
+    Orkes. “What Is Orchestration?”  
+    <a href="https://orkes.io/blog/what-is-orchestration/" 
+       target="_blank" class="text-indigo-600 hover:underline">
+       https://orkes.io/blog/what-is-orchestration/
     </a>
   </li>
 
   <li>
-    <a href="https://docs.docker.com" target="_blank" class="text-indigo-600 hover:underline">
-      Docker Official Documentation
+    Nygren, E., Sitaraman, R. K., & Sun, J. (2010).  
+    “The Akamai Network: A Platform for High-Performance Internet Applications.”  
+    <em>ACM SIGOPS Operating Systems Review</em>.
+  </li>
+
+  <li>
+    Pathan, M., & Buyya, R. (2008).  
+    “A Taxonomy of CDNs.” In <em>Content Delivery Networks</em>. Springer.
+  </li>
+
+  <li>
+    Spiceworks. “What Is a Content Delivery Network (CDN)?”  
+    <a href="https://www.spiceworks.com/tech/networking/articles/what-is-content-delivery-network/" 
+       target="_blank" class="text-indigo-600 hover:underline">
+       https://www.spiceworks.com/tech/networking/articles/what-is-content-delivery-network/
     </a>
   </li>
 
   <li>
-    <a href="https://opencontainers.org" target="_blank" class="text-indigo-600 hover:underline">
-      Open Container Initiative (OCI)
+    Open Container Initiative (OCI). (2015).  
+    <em>OCI Image and Runtime Specifications</em>. Linux Foundation.
+  </li>
+
+  <li>
+    Berners-Lee, T., et al. (2015).  
+    <em>Hypertext Transfer Protocol Version 2 (HTTP/2)</em>. IETF RFC 7540.
+  </li>
+
+  <li>
+    Aqua Security. (2025).  
+    “A Brief History of Containers: From 1970s chroot to Docker.”
+  </li>
+
+  <li>
+    Think with Google. (2018).  
+    “The Need for Mobile Speed: How Mobile Latency Impacts Publisher Revenue.”  
+    <a href="https://www.thinkwithgoogle.com/marketing-strategies/app-and-mobile/mobile-page-speed-new-industry-benchmarks/"
+       target="_blank" class="text-indigo-600 hover:underline">
+       https://www.thinkwithgoogle.com/...
     </a>
   </li>
 
   <li>
-    <a href="https://prometheus.io/docs/" target="_blank" class="text-indigo-600 hover:underline">
-      Prometheus Documentation
+    Kohavi, R., & Longbotham, R. (2007).  
+    “Online Experiments: Lessons Learned.”  
+    <em>IEEE Computer</em>, 40(9), 103–105.
+  </li>
+
+  <li>
+    Netflix Technology Blog.  
+    “Open Connect Overview.” (2021).  
+    <a href="https://openconnect.netflix.com/" 
+       target="_blank" class="text-indigo-600 hover:underline">
+       https://openconnect.netflix.com/
     </a>
   </li>
 
   <li>
-    <a href="https://www.cncf.io/reports/" target="_blank" class="text-indigo-600 hover:underline">
-      CNCF Annual Surveys & Industry Reports
+    Palmer, A. (2021).  
+    “Amazon, Reddit and Twitch Go Down in Major Internet Outage.”  
+    <em>CNBC</em>.  
+    <a href="https://www.cnbc.com/2021/06/08/fastly-global-internet-outage-affects-amazon-reddit.html" 
+       target="_blank" class="text-indigo-600 hover:underline">
+        https://www.cnbc.com/2021/06/08/...
     </a>
   </li>
 
   <li>
-    <a href="https://www.datadoghq.com/container-report/" target="_blank" class="text-indigo-600 hover:underline">
-      Datadog Container Report
+    Constantin, L. (2021).  
+    “Fastly Outage Highlights Internet's Reliance on Key Infrastructure Providers.”  
+    <em>CSO Online</em>.  
+    <a href="https://www.csoonline.com/article/3622995/fastly-outage-highlights-internets-reliance-on-a-few-key-infrastructure-providers.html"
+       target="_blank" class="text-indigo-600 hover:underline">
+       https://www.csoonline.com/...
+    </a>
+  </li>
+
+  <li>
+    Cisco. (2020).  
+    “Cisco Annual Internet Report (2018–2023) White Paper.”  
+    <a href="https://www.cisco.com/c/en/us/solutions/collateral/executive-perspectives/annual-internet-report/white-paper-c11-741490.html" 
+       target="_blank" class="text-indigo-600 hover:underline">
+       https://www.cisco.com/...
+    </a>
+  </li>
+
+</ol>
+`
+  },
+  {
+    id: "additional-sources",
+    title: "18. Additional Sources",
+    content: `
+<p class="leading-relaxed mb-4">
+The following additional sources provide deeper insights into virtualization, containerization, 
+orchestration, CDNs, cloud infrastructure, site reliability engineering, and large-scale distributed systems.
+Learners are encouraged to explore these materials for extended understanding beyond this tutorial.
+</p>
+
+<ul class="list-disc ml-6 leading-relaxed space-y-2">
+
+  <li>
+    Microsoft Azure. “What Is a Virtual Machine?”  
+    <a href="https://azure.microsoft.com/en-us/resources/cloud-computing-dictionary/what-is-a-virtual-machine"
+       target="_blank" class="text-indigo-600 hover:underline">
+      https://azure.microsoft.com/.../what-is-a-virtual-machine
+    </a>
+  </li>
+
+  <li>
+    MasterDC. “What Is Containerization? Benefits Explained.”  
+    <a href="https://www.masterdc.com/blog/what-is-containerization-benefits-explained/"
+       target="_blank" class="text-indigo-600 hover:underline">
+      https://www.masterdc.com/.../containerization-benefits
+    </a>
+  </li>
+
+  <li>
+    Red Hat. “What Is Orchestration?”  
+    <a href="https://www.redhat.com/en/topics/automation/what-is-orchestration"
+       target="_blank" class="text-indigo-600 hover:underline">
+      https://www.redhat.com/.../what-is-orchestration
+    </a>
+  </li>
+
+  <li>
+    Cloudflare Learning Center. “What Is a CDN? How Do CDNs Work?”  
+    <a href="https://www.cloudflare.com/learning/cdn/what-is-a-cdn/"
+       target="_blank" class="text-indigo-600 hover:underline">
+      https://www.cloudflare.com/learning/cdn/what-is-a-cdn/
+    </a>
+  </li>
+
+  <li>
+    Amazon Web Services. “How CloudFront Delivers Content.”  
+    <a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/HowCloudFrontWorks.html"
+       target="_blank" class="text-indigo-600 hover:underline">
+      https://docs.aws.amazon.com/.../HowCloudFrontWorks
+    </a>
+  </li>
+
+  <li>
+    Wiggins, A. (2011). <em>The Twelve-Factor App</em>.  
+    <a href="https://12factor.net"
+       target="_blank" class="text-indigo-600 hover:underline">
+      https://12factor.net
+    </a>
+  </li>
+
+  <li>
+    Beyer, B., Jones, C., Petoff, J., & Murphy, N. R. (2016).  
+    <em>Site Reliability Engineering: How Google Runs Production Systems</em>.  
+    O’Reilly Media.  
+    <a href="https://sre.google/books/"
+       target="_blank" class="text-indigo-600 hover:underline">
+      https://sre.google/books/
+    </a>
+  </li>
+
+  <li>
+    Nishtala, R., et al. (2013). “Scaling Memcache at Facebook.”  
+    Proceedings of the 10th USENIX Symposium on Networked Systems Design and Implementation (NSDI).  
+    <a href="https://www.usenix.org/conference/nsdi13/technical-sessions/presentation/nishtala"
+       target="_blank" class="text-indigo-600 hover:underline">
+      https://www.usenix.org/.../nishtala
+    </a>
+  </li>
+
+  <li>
+    DeCandia, G., et al. (2007). “Dynamo: Amazon’s Highly Available Key-value Store.”  
+    Proceedings of the 21st ACM Symposium on Operating Systems Principles (SOSP).  
+    <a href="https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf"
+       target="_blank" class="text-indigo-600 hover:underline">
+      https://www.allthingsdistributed.com/.../dynamo
     </a>
   </li>
 
 </ul>
 
-<p class="leading-relaxed mt-4">
-Learners should refer to these resources for deeper study and cite them appropriately in analytical write-ups.
+<p class="leading-relaxed mt-6">
+These additional sources provide advanced context for learners who wish to explore 
+cloud-native systems, distributed caching, orchestration frameworks, and SRE principles in depth.
 </p>
 `
   },
 
 
-  {
-    id: "summary",
-    title: "17. Summary",
-    content: `
-<p class="leading-relaxed">
-This tutorial provided a complete walkthrough of performant and scalable web application deployment. 
-You learned the foundations of cloud-native development: containerization, orchestration, autoscaling,
-CDN optimization, and edge caching. These concepts are used widely across modern engineering teams.
-</p>
-
-<p class="leading-relaxed mt-4">
-This React-based tutorial webpage now serves as a complete reference for your SER598 project submission.
-</p>
-
-<p class="leading-relaxed mt-4 font-semibold">
-Group3 — Performant & Scalable Deployment | Fall 2025
-</p>
-`,
-  },
 ];
 
 export default function App() {
@@ -653,8 +1221,8 @@ export default function App() {
       {/* Header */}
       <header className="bg-white shadow p-6 border-b sticky top-0 z-20">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-2xl font-bold">Group3 — Performant & Scalable Deployment</h1>
-          <p className="text-gray-600">SER598 Advanced Web Project — Fall 2025</p>
+          <h1 className="text-2xl font-bold">Group3 - Performant & Scalable Deployment</h1>
+          <p className="text-gray-600">SER598 Advanced Web Project - Fall 2025</p>
         </div>
       </header>
 
@@ -687,13 +1255,13 @@ export default function App() {
               key={s.id}
               className="bg-white border shadow-sm rounded-lg p-8 prose prose-indigo max-w-none scroll-mt-28"
               dangerouslySetInnerHTML={{
-                __html: `<h2>${s.title}</h2>${s.content}`,
+                __html: `<h2><b>${s.title}</b></h2>${s.content}`,
               }}
             />
           ))}
 
           <footer className="text-center text-sm text-gray-500 mt-12">
-            Group3 — SER598 Advanced Web Project | Fall 2025
+            Group3 - SER598 Advanced Web Project | Fall 2025
           </footer>
         </main>
       </div>
