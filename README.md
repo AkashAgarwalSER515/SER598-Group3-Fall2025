@@ -3,9 +3,9 @@
 # Performant and Scalable deployment: replication, cloud, containers, k8s, CDNs, caching, Edge APIs, etc.
 
 ## Team Members
-Akash Agarwal
-Aarti Nemade
-Rushit Kothari
+Akash Agarwal,
+Aarti Nemade,
+Rushit Kothari,
 Rushad Wankadia
 
 ## Note: 
